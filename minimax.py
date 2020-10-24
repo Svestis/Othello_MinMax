@@ -1,0 +1,2 @@
+def minimax():
+    return tree
