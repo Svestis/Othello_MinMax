@@ -9,7 +9,7 @@ def print_hi(name):
     print()
 
 
-def parseArguments():
+def parse_arguments():
     parser = argparse.ArgumentParser(description='Othello settings')
 
 
@@ -18,5 +18,4 @@ if __name__ == '__main__':
     board = othello.create_board()
     othello.print_board(board)
     othello.set_board(2, 2, 1, board)
-    print(board)
     othello.print_board(board)
