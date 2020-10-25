@@ -43,3 +43,12 @@ def print_header():
     for i in range(ord('a'), ord('i')):
         print(chr(i), end='')
         print("     ", end='')
+
+
+def calculate_moves():
+    possible_moves = []
+
+
+def start_game():
+    board = create_board()
+    return board
