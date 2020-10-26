@@ -6,8 +6,8 @@ def create_board():
     return [[0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 'L', 'D', 0, 0, 0],
+            [0, 0, 0, 'D', 'L', 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]]
@@ -20,6 +20,12 @@ def set_board(row, column, value, board):
 
 
 def print_board(board):
+    def print_header():
+        print("     ", end='')
+        for i in range(ord('a'), ord('i')):
+            print(chr(i), end='')
+            print("     ", end='')
+
     print_header()
     for i in range(0, ROWS):
         print("")
@@ -38,17 +44,5 @@ def print_board(board):
     print()
 
 
-def print_header():
-    print("     ", end='')
-    for i in range(ord('a'), ord('i')):
-        print(chr(i), end='')
-        print("     ", end='')
-
-
-def calculate_moves():
-    possible_moves = []
-
-
-def start_game():
-    board = create_board()
-    return board
+board_ = create_board()
+print_board(board_)
