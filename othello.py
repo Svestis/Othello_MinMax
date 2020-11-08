@@ -23,14 +23,14 @@ def row_index(element):
 
 
 def create_board():
-    return [[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', 'D', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', 'D', 'D', ' ', ' ', ' '],
-            [' ', ' ', 'L', 'L', 'L', ' ', ' ', ' '],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
+    return [[' ', ' ', 'L', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', 'D', 'L', 'L', 'L', 'L', ' '],
+            [' ', ' ', ' ', 'D', 'D', 'L', ' ', ' '],
+            [' ', ' ', ' ', 'L', 'L', 'D', ' ', ' '],
+            ['D', 'D', 'L', 'L', 'D', 'D', 'D', ' '],
+            [' ', 'L', 'L', ' ', 'D', 'D', 'D', ' '],
+            ['L', ' ', ' ', ' ', 'D', 'D', ' ', ' '],
+            [' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ']]
 
 
 def set_board(move, value, board):
@@ -89,39 +89,55 @@ def find_moves(board, player_color):
             for x in range(piece[1] - 1, -1, -1):
                 if (piece[0], x) in player_pieces:
                     valid_moves.add((piece[0], piece[1] + 1))
+                elif board[piece[0]][x] == ' ':
+                    break
         if (piece[0] + 1, piece[1]) not in opponent_pieces and (piece[0] + 1, piece[1]) not in player_pieces and piece[0] != 7:
             for y in range(piece[0] - 1, -1, -1):
                 if (y, piece[1]) in player_pieces:
                     valid_moves.add((piece[0] + 1, piece[1]))
+                elif board[y][piece[1]] == ' ':
+                    break
         if (piece[0], piece[1] - 1) not in opponent_pieces and (piece[0], piece[1] - 1) not in player_pieces and piece[1] != 0:
             for x in range(piece[1] + 1, 8):
                 if (piece[0], x) in player_pieces:
                     valid_moves.add((piece[0], piece[1] - 1))
+                elif board[piece[0]][x] == ' ':
+                    break
         if (piece[0] - 1, piece[1]) not in opponent_pieces and (piece[0] - 1, piece[1]) not in player_pieces and piece[0] != 0:
             for y in range(piece[0] + 1, 8):
                 if (y, piece[1]) in player_pieces:
                     valid_moves.add((piece[0] - 1, piece[1]))
+                elif board[y][piece[1]] == ' ':
+                    break
         # Finding diagonal
         if (piece[0] - 1, piece[1] - 1) not in opponent_pieces and (piece[0] - 1, piece[1] - 1) not in player_pieces and piece[0] != 0 and piece[1] != 0:
             for y, x in zip(range(piece[0] + 1, 8), range(piece[1] + 1, 8)):
                 if (y, x) in player_pieces:
                     valid_moves.add((piece[0] - 1, piece[1] - 1))
                     diagonal.add((piece[0] - 1, piece[1] - 1))
+                elif board[y][x] == ' ':
+                    break
         if (piece[0] + 1, piece[1] + 1) not in opponent_pieces and (piece[0] + 1, piece[1] + 1) not in player_pieces and piece[0] != 8 and piece[1] != 8:
             for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] - 1, -1, -1)):
                 if (y, x) in player_pieces:
                     valid_moves.add((piece[0] + 1, piece[1] + 1))
                     diagonal.add((piece[0] + 1, piece[1] + 1))
+                elif board[y][x] == ' ':
+                    break
         if (piece[0] + 1, piece[1] - 1) not in opponent_pieces and (piece[0] + 1, piece[1] - 1) not in player_pieces and piece[0] != 8 and piece[1] != 0:
             for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] + 1, 8)):
                 if (y, x) in player_pieces:
                     valid_moves.add((piece[0] + 1, piece[1] - 1))
                     diagonal.add((piece[0] + 1, piece[1] - 1))
+                elif board[y][x] == ' ':
+                    break
         if (piece[0] - 1, piece[1] + 1) not in opponent_pieces and (piece[0] - 1, piece[1] + 1) not in player_pieces and piece[0] != 0 and piece[1] != 8:
             for y, x in zip(range(piece[0] + 1, 8), range(piece[1] - 1, -1, -1)):
                 if (y, x) in player_pieces:
                     valid_moves.add((piece[0] - 1, piece[1] + 1))
                     diagonal.add((piece[0] - 1, piece[1] + 1))
+                elif board[y][x] == ' ':
+                    break
 
     print("Valid Moves before diagonal: {}".format(valid_moves))
     # Finding actual valid moves
