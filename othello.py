@@ -8,7 +8,7 @@ def create_board():
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 'D', 0, 0, 0, 0],
             [0, 0, 0, 'D', 'D', 0, 0, 0],
-            [0, 0, 'L', 'L', 'L', 0, 0, 0],
+            [0, 0, 0, 'D', 'L', 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]]
@@ -49,69 +49,51 @@ board_ = create_board()
 print_board(board_)
 
 
-def findPieces(board, play):
+def find_moves(board, player_color):
+    if player_color == 'L':
+        opponent_color = 'D'
+    else:
+        opponent_color = 'L'
     # Finding darks and lights and adding the coordinates in tuple
     matrix = np.array(board)
-    darks_ = np.where(matrix == 'D')
-    darks = set()
-    for i in range(0, len(darks_[0])):
-        darks.add((darks_[0][i], darks_[1][i]))
-    lights_ = np.where(matrix == 'L')
-    lights = set()
-    for i in range(0, len(lights_[0])):
-        lights.add((lights_[0][i], lights_[1][i]))
+    player_pieces_ = np.where(matrix == player_color)
+    player_pieces = set()
+    for i in range(0, len(player_pieces_[0])):
+        player_pieces.add((player_pieces_[0][i], player_pieces_[1][i]))
+    opponent_pieces_ = np.where(matrix == opponent_color)
+    opponent_pieces = set()
+    for i in range(0, len(opponent_pieces_[0])):
+        opponent_pieces.add((opponent_pieces_[0][i], opponent_pieces_[1][i]))
     valid_moves = set()
+    print("Player pieces: {}".format(player_pieces))
+    print("Opponent pieces: {}".format(opponent_pieces))
     # Finding valid moves (valid=being around opposite color). Checking also border condition
-    if play == 'L':
-        for col, row in darks:
-            if(col+1, row) not in darks and (col+1, row) not in lights and col != 7:
-                valid_moves.add((col+1, row))
-            if(col, row+1) not in darks and (col, row+1) not in lights and row != 7:
-                valid_moves.add((col, row+1))
-            if(col-1, row) not in darks and (col-1, row) not in lights and col != 0:
-                valid_moves.add((col-1, row))
-            if(col, row-1) not in darks and (col, row-1) not in lights and row != 0:
-                valid_moves.add((col, row-1))
-        # Finding diagonal
-        diagonal = set()
-        for col, row in lights:
-            for i, j in zip(range(2, COLUMNS-col), range(2, ROWS-row)):
-                diagonal.add((col+i, row+j))
-                diagonal.add((col-i, row-j))
-                diagonal.add((col-i, row+j))
-                diagonal.add((col+i, row-j))
-        # Finding actual valid moves
-        for col_v, row_v in valid_moves.copy():
-            for (col, row) in lights:
-                if (col != col_v and row != row_v) and (col_v, row_v) not in diagonal:
-                    if(col_v, row_v) in valid_moves:
-                        valid_moves.remove((col_v, row_v))
-    # Finding valid moves (valid=being around opposite color). Checking also border condition
-    if play == 'D':
-        for col, row in lights:
-            if(col+1, row) not in darks and (col+1, row) not in lights and col != 7:
-                valid_moves.add((col+1, row))
-            if(col, row+1) not in darks and (col, row+1) not in lights and row != 7:
-                valid_moves.add((col, row+1))
-            if(col-1, row) not in darks and (col-1, row) not in lights and col != 0:
-                valid_moves.add((col-1, row))
-            if(col, row-1) not in darks and (col, row-1) not in lights and row != 0:
-                valid_moves.add((col, row-1))
-        # Finding diagonal
-        diagonal = set()
-        for col, row in darks:
-            for i, j in zip(range(2, COLUMNS-col), range(2, ROWS-row)):
-                diagonal.add((col+i, row+j))
-                diagonal.add((col-i, row-j))
-                diagonal.add((col-i, row+j))
-                diagonal.add((col+i, row-j))
-        # Finding actual valid moves
-        for col_v, row_v in valid_moves.copy():
-            for (col, row) in darks:
-                if (col != col_v and row != row_v) and (col_v, row_v) not in diagonal:
-                    if (col_v, row_v) in valid_moves:
-                        valid_moves.remove((col_v, row_v))
+    for col, row in opponent_pieces:
+        if(col+1, row) not in opponent_pieces and (col+1, row) not in player_pieces and col != 7:
+            valid_moves.add((col+1, row))
+        if(col, row+1) not in opponent_pieces and (col, row+1) not in player_pieces and row != 7:
+            valid_moves.add((col, row+1))
+        if(col-1, row) not in opponent_pieces and (col-1, row) not in player_pieces and col != 0:
+            valid_moves.add((col-1, row))
+        if(col, row-1) not in opponent_pieces and (col, row-1) not in player_pieces and row != 0:
+            valid_moves.add((col, row-1))
+    # Finding diagonal
+    diagonal = set()
+    print("Valid Moves: {}".format(valid_moves))
+    for col, row in player_pieces:
+        for i, j in zip(range(1, COLUMNS-col), range(1, ROWS-row)):
+            diagonal.add((col+i, row+j))
+            diagonal.add((col-i, row-j))
+            diagonal.add((col-i, row+j))
+            diagonal.add((col+i, row-j))
+    # Finding actual valid moves
+    for (col_v, row_v) in valid_moves.copy():
+        exists_in_player = False
+        for (col, row) in player_pieces:
+            if col == col_v or row == row_v:
+                exists_in_player = True
+        if not exists_in_player:
+            valid_moves.remove((col_v, row_v))
     return valid_moves
 
-
-print(findPieces(board_, 'D'))
+print(find_moves(board_, 'L'))
