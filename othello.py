@@ -68,32 +68,32 @@ def find_moves(board, player_color):
     print("Player pieces: {}".format(player_pieces))
     print("Opponent pieces: {}".format(opponent_pieces))
     # Finding valid moves (valid=being around opposite color). Checking also border condition
-    for col, row in opponent_pieces:
-        if(col+1, row) not in opponent_pieces and (col+1, row) not in player_pieces and col != 7:
-            valid_moves.add((col+1, row))
-        if(col, row+1) not in opponent_pieces and (col, row+1) not in player_pieces and row != 7:
-            valid_moves.add((col, row+1))
-        if(col-1, row) not in opponent_pieces and (col-1, row) not in player_pieces and col != 0:
-            valid_moves.add((col-1, row))
-        if(col, row-1) not in opponent_pieces and (col, row-1) not in player_pieces and row != 0:
-            valid_moves.add((col, row-1))
+    for row, col in opponent_pieces:
+        if(row, col+1) not in opponent_pieces and (row, col+1) not in player_pieces and col != 7:
+            valid_moves.add((row, col+1))
+        if(row+1, col) not in opponent_pieces and (row+1, col) not in player_pieces and row != 7:
+            valid_moves.add((row+1, col))
+        if(row, col-1) not in opponent_pieces and (row, col-1) not in player_pieces and col != 0:
+            valid_moves.add((row, col-1))
+        if(row-1, col) not in opponent_pieces and (row-1, col) not in player_pieces and row != 0:
+            valid_moves.add((row-1, col))
     # Finding diagonal
     diagonal = set()
     print("Valid Moves: {}".format(valid_moves))
-    for col, row in player_pieces:
-        for i, j in zip(range(1, COLUMNS-col), range(1, ROWS-row)):
-            diagonal.add((col+i, row+j))
-            diagonal.add((col-i, row-j))
-            diagonal.add((col-i, row+j))
-            diagonal.add((col+i, row-j))
+    for row, col in player_pieces:
+        for i, j in zip(range(2, ROWS-row), range(2, COLUMNS-col)):
+            diagonal.add((row+j, col+i))
+            diagonal.add((row-j, col-i))
+            diagonal.add((row+j, col-i))
+            diagonal.add((row-j, col+i))
     # Finding actual valid moves
-    for (col_v, row_v) in valid_moves.copy():
+    for (row_v, col_v) in valid_moves.copy():
         exists_in_player = False
-        for (col, row) in player_pieces:
-            if col == col_v or row == row_v:
+        for (row, col) in player_pieces:
+            if col == col_v or row == row_v or (row_v, col_v) in diagonal:
                 exists_in_player = True
         if not exists_in_player:
-            valid_moves.remove((col_v, row_v))
+            valid_moves.remove((row_v, col_v))
     return valid_moves
 
 print(find_moves(board_, 'L'))
