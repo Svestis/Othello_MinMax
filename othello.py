@@ -1,23 +1,42 @@
 import numpy as np
+
 ROWS = 8
 COLUMNS = 8
+col_enumerator = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
+row_enumerator = ('1', '2', '3', '4', '5', '6', '7', '8')
+
+
+def col_enum(id):
+    return col_enumerator[id]
+
+
+def row_enum(id):
+    return row_enumerator[id]
+
+
+def col_index(element):
+    return col_enumerator.index(element)
+
+
+def row_index(element):
+    return row_enumerator.index(element)
 
 
 def create_board():
-    return [[0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 'D', 0, 0, 0, 0],
-            [0, 0, 0, 'D', 'D', 0, 0, 0],
-            [0, 0, 0, 'D', 'L', 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0]]
+    return [[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', 'D', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', 'D', 'D', ' ', ' ', ' '],
+            [' ', ' ', 'L', 'L', 'L', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
 
-def set_board(row, column, value, board):
-    if row > 8 or column > 8:
+def set_board(move, value, board):
+    if move[0] > 8 or move[1] > 8:
         raise IndexError("Row and column should be less than or equal to 8. Please try again")
-    board[row][column] = value
+    board[move[0]][move[1]] = value
 
 
 def print_board(board):
@@ -45,10 +64,6 @@ def print_board(board):
     print()
 
 
-board_ = create_board()
-print_board(board_)
-
-
 def find_moves(board, player_color):
     if player_color == 'L':
         opponent_color = 'D'
@@ -65,27 +80,50 @@ def find_moves(board, player_color):
     for i in range(0, len(opponent_pieces_[0])):
         opponent_pieces.add((opponent_pieces_[0][i], opponent_pieces_[1][i]))
     valid_moves = set()
+    diagonal = set()
     print("Player pieces: {}".format(player_pieces))
     print("Opponent pieces: {}".format(opponent_pieces))
     # Finding valid moves (valid=being around opposite color). Checking also border condition
-    for row, col in opponent_pieces:
-        if(row, col+1) not in opponent_pieces and (row, col+1) not in player_pieces and col != 7:
-            valid_moves.add((row, col+1))
-        if(row+1, col) not in opponent_pieces and (row+1, col) not in player_pieces and row != 7:
-            valid_moves.add((row+1, col))
-        if(row, col-1) not in opponent_pieces and (row, col-1) not in player_pieces and col != 0:
-            valid_moves.add((row, col-1))
-        if(row-1, col) not in opponent_pieces and (row-1, col) not in player_pieces and row != 0:
-            valid_moves.add((row-1, col))
-    # Finding diagonal
-    diagonal = set()
+    for piece in opponent_pieces:
+        if (piece[0], piece[1] + 1) not in opponent_pieces and (piece[0], piece[1] + 1) not in player_pieces and piece[1] != 7:
+            for x in range(piece[1] - 1, -1, -1):
+                if (piece[0], x) in player_pieces:
+                    valid_moves.add((piece[0], piece[1] + 1))
+        if (piece[0] + 1, piece[1]) not in opponent_pieces and (piece[0] + 1, piece[1]) not in player_pieces and piece[0] != 7:
+            for y in range(piece[0] - 1, -1, -1):
+                if (y, piece[1]) in player_pieces:
+                    valid_moves.add((piece[0] + 1, piece[1]))
+        if (piece[0], piece[1] - 1) not in opponent_pieces and (piece[0], piece[1] - 1) not in player_pieces and piece[1] != 0:
+            for x in range(piece[1] + 1, 8):
+                if (piece[0], x) in player_pieces:
+                    valid_moves.add((piece[0], piece[1] - 1))
+        if (piece[0] - 1, piece[1]) not in opponent_pieces and (piece[0] - 1, piece[1]) not in player_pieces and piece[0] != 0:
+            for y in range(piece[0] + 1, 8):
+                if (y, piece[1]) in player_pieces:
+                    valid_moves.add((piece[0] - 1, piece[1]))
+        # Finding diagonal
+        if (piece[0] - 1, piece[1] - 1) not in opponent_pieces and (piece[0] - 1, piece[1] - 1) not in player_pieces and piece[0] != 0 and piece[1] != 0:
+            for y, x in zip(range(piece[0] + 1, 8), range(piece[1] + 1, 8)):
+                if (y, x) in player_pieces:
+                    valid_moves.add((piece[0] - 1, piece[1] - 1))
+                    diagonal.add((piece[0] - 1, piece[1] - 1))
+        if (piece[0] + 1, piece[1] + 1) not in opponent_pieces and (piece[0] + 1, piece[1] + 1) not in player_pieces and piece[0] != 8 and piece[1] != 8:
+            for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] - 1, -1, -1)):
+                if (y, x) in player_pieces:
+                    valid_moves.add((piece[0] + 1, piece[1] + 1))
+                    diagonal.add((piece[0] + 1, piece[1] + 1))
+        if (piece[0] + 1, piece[1] - 1) not in opponent_pieces and (piece[0] + 1, piece[1] - 1) not in player_pieces and piece[0] != 8 and piece[1] != 0:
+            for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] + 1, 8)):
+                if (y, x) in player_pieces:
+                    valid_moves.add((piece[0] + 1, piece[1] - 1))
+                    diagonal.add((piece[0] + 1, piece[1] - 1))
+        if (piece[0] - 1, piece[1] + 1) not in opponent_pieces and (piece[0] - 1, piece[1] + 1) not in player_pieces and piece[0] != 0 and piece[1] != 8:
+            for y, x in zip(range(piece[0] + 1, 8), range(piece[1] - 1, -1, -1)):
+                if (y, x) in player_pieces:
+                    valid_moves.add((piece[0] - 1, piece[1] + 1))
+                    diagonal.add((piece[0] - 1, piece[1] + 1))
+
     print("Valid Moves before diagonal: {}".format(valid_moves))
-    for row, col in player_pieces:
-        for i, j in zip(range(2, ROWS-row), range(2, COLUMNS-col)):
-            diagonal.add((row+j, col+i))
-            diagonal.add((row-j, col-i))
-            diagonal.add((row+j, col-i))
-            diagonal.add((row-j, col+i))
     # Finding actual valid moves
     for (row_v, col_v) in valid_moves.copy():
         exists_in_player = False
@@ -94,6 +132,17 @@ def find_moves(board, player_color):
                 exists_in_player = True
         if not exists_in_player:
             valid_moves.remove((row_v, col_v))
+
     return valid_moves
 
-print("Valid Moves final: {}".format(find_moves(board_, 'L')))
+
+def set_possible(board, moves):
+    print("Valid Moves final: {}".format(moves))
+    for move in moves:
+        set_board(move, 'X', board)
+
+
+board_ = create_board()
+
+set_possible(board_, find_moves(board_, 'D'))
+print_board(board_)
