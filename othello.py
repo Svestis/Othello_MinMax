@@ -79,7 +79,7 @@ def find_moves(board, player_color):
             valid_moves.add((row-1, col))
     # Finding diagonal
     diagonal = set()
-    print("Valid Moves: {}".format(valid_moves))
+    print("Valid Moves before diagonal: {}".format(valid_moves))
     for row, col in player_pieces:
         for i, j in zip(range(2, ROWS-row), range(2, COLUMNS-col)):
             diagonal.add((row+j, col+i))
@@ -96,4 +96,4 @@ def find_moves(board, player_color):
             valid_moves.remove((row_v, col_v))
     return valid_moves
 
-print(find_moves(board_, 'L'))
+print("Valid Moves final: {}".format(find_moves(board_, 'L')))
