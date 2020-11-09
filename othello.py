@@ -6,11 +6,11 @@ col_enumerator = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 row_enumerator = ('1', '2', '3', '4', '5', '6', '7', '8')
 
 
-def col_enum(id):
+def col_enum(id: int):
     return col_enumerator[id]
 
 
-def row_enum(id):
+def row_enum(id: int):
     return row_enumerator[id]
 
 
@@ -23,6 +23,11 @@ def row_index(element):
 
 
 def create_board():
+    """
+    Creates the board in the primary state
+    :return: The board in the primary state
+    :rtype: list
+    """
     return [[' ', ' ', 'L', ' ', ' ', ' ', ' ', ' '],
             [' ', ' ', 'D', 'L', 'L', 'L', 'L', ' '],
             [' ', ' ', ' ', 'D', 'D', 'L', ' ', ' '],
@@ -33,13 +38,31 @@ def create_board():
             [' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ']]
 
 
-def set_board(move, value, board):
+def set_board(move: tuple, value: chr, board: list):
+    """
+    Sets the board according to a given move
+    :param move: The move that we want to add to the board
+    :type move: tuple
+    :param value: The value of the color to be added
+    :type value: chr
+    :param board: The current board
+    :type board: list
+    :return: None
+    :rtype: None
+    """
     if move[0] > 8 or move[1] > 8:
         raise IndexError("Row and column should be less than or equal to 8. Please try again")
     board[move[0]][move[1]] = value
 
 
-def print_board(board):
+def print_board(board: list):
+    """
+    Prints the board
+    :param board: the current board
+    :type board: list
+    :return: None
+    :rtype: None
+    """
     def print_header():
         print("     ", end='')
         for i in range(ord('a'), ord('i')):
@@ -64,7 +87,16 @@ def print_board(board):
     print()
 
 
-def find_moves(board, player_color):
+def find_moves(board: list, player_color: chr):
+    """
+    Finding the possible moves according to current state of play
+    :param board: the current board
+    :type board: list
+    :param player_color: the color of the player that is playing
+    :type player_color: chr
+    :return: The possible valid moves in a tuple format
+    :rtype: set
+    """
     if player_color == 'L':
         opponent_color = 'D'
     else:
@@ -152,7 +184,16 @@ def find_moves(board, player_color):
     return valid_moves
 
 
-def set_possible(board, moves):
+def set_possible(board: list, moves: set):
+    """
+    Displaying possible moves on the current board
+    :param board: the current board
+    :type board: list
+    :param moves: the possible moves for this board state
+    :type moves: set
+    :return: A board with the possible moves displayed
+    :rtype: list
+    """
     print("Valid Moves final: {}".format(moves))
     for move in moves:
         set_board(move, 'X', board)
