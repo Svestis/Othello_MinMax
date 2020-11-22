@@ -1,2 +1,2 @@
-def minimax():
-    return tree
+def minimax(board):
+    return move

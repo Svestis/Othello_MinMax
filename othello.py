@@ -48,14 +48,14 @@ class Game:
 
     @staticmethod
     def create_board():
-        return [[0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 'L', 'D', 0, 0, 0],
-                [0, 0, 0, 'D', 'L', 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0]]
+        return [[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', 'L', 'D', ' ', ' ', ' '],
+                [' ', ' ', ' ', 'D', 'L', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
     # Set colors based on who is playing first
     def set_color(self, player_first):
@@ -191,13 +191,13 @@ class Game:
         self.print_board()
 
         random.seed(1412)
-        random_move = random.randint(0, len(self.valid_moves) - 1, )  # TODO this will change, implement AI
+        random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
         self.set_board(self.valid_moves[random_move], self.computer_color)  # TODO this will change, implement AI
 
         return False
 
     # Flip all opponent pieces
-    def flip_opponent_pieces(self, move):
+    def flip_opponent_pieces(self, move):  # TODO this will assist the AI
 
         self.reset_all_marks()
         return
@@ -207,7 +207,7 @@ class Game:
         for i in range(0, COLUMNS):
             for j in range(0, ROWS):
                 if self.board[i][j] == 'X':
-                    self.board[i][j] = 0
+                    self.board[i][j] = ' '
         return
 
     # Find all possible move for current round
