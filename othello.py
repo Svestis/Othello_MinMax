@@ -10,22 +10,28 @@ row_enumerator = ('1', '2', '3', '4', '5', '6', '7', '8')
 
 # Converts number to column letter
 def col_enum(index):
-    return col_enumerator[index]
+    if index < len(col_enumerator):
+        return col_enumerator[index]
+    return False
 
 
 # Converts number to row number
 def row_enum(index):
-    return row_enumerator[index]
+    if index < len(row_enumerator):
+        return row_enumerator[index]
+    return False
 
 
 # Get column index from element
 def col_index(element):
-    return col_enumerator.index(element)
+    index = col_enumerator.index(element)
+    return index
 
 
 # Get row index from element
 def row_index(element):
-    return row_enumerator.index(element)
+    index = row_enumerator.index(element)
+    return index
 
 
 class Game:
@@ -62,23 +68,27 @@ class Game:
             self.computer_color = 'D'
             self.actor_color = self.computer_color
 
+    # Add value to board coordinates
     def set_board(self, move, value):
         def move_exists():
             for valid_move in self.valid_moves:
-                if (move[0], move[1]) == valid_move:
+                if (move[1], move[0]) == valid_move:
                     return True
             return False
 
         if move[0] > 8 or move[1] > 8:
             raise IndexError("Row and column should be less than or equal to 8. Please try again")
         if move_exists():
-            self.board[move[0]][move[1]] = value
+            self.board[move[1]][move[0]] = value
             if value == self.player_color or value == self.computer_color:
                 self.game_history.append((move[0], move[1], value))
+            return move
         else:
             print("Your piece can't be placed in {}{}. It is not a valid move.".format(col_enum(move[0]),
                                                                                        row_enum(move[1])))
+            return False
 
+    # Print the current board state
     def print_board(self):
         def print_header():
             print("     ", end='')
@@ -103,6 +113,7 @@ class Game:
         print()
         print()
 
+    # Print all moves made till now
     def print_history(self):
         i = 0
         print("\nGame History:")
@@ -150,8 +161,18 @@ class Game:
         input_split = player_input.split(" ")
         if len(input_split) > 0 and input_split[0] == "move":
             if len(input_split) > 1:
-                move = ((col_index(input_split[1].__getitem__(0))), row_index(col_index(input_split[1].__getitem__(1))))
-                self.set_board(move, self.player_color)
+                # if col_index(input_split[1].__getitem__(0).upper()) and row_index(input_split[1].__getitem__(1)):
+                #     self.handle_player_input(input("Choose and action (move XY or history): "))
+                try:
+                    move = (
+                    (col_index(input_split[1].__getitem__(0).upper())), row_index(input_split[1].__getitem__(1)))
+                    new_piece = self.set_board(move, self.player_color)
+                    if not new_piece:
+                        self.handle_player_input(input("Choose and action (move XY or history): "))
+                    else:
+                        self.flip_opponent_pieces(new_piece)
+                except:
+                    self.handle_player_input(input("Choose and action (move XY or history): "))
             else:
                 self.handle_player_input(input("Choose and action (move XY or history): "))
         elif input_split[0] == "history":
@@ -174,6 +195,20 @@ class Game:
         self.set_board(self.valid_moves[random_move], self.computer_color)  # TODO this will change, implement AI
 
         return False
+
+    # Flip all opponent pieces
+    def flip_opponent_pieces(self, move):
+
+        self.reset_all_marks()
+        return
+
+    # Reset all X marks
+    def reset_all_marks(self):
+        for i in range(0, COLUMNS):
+            for j in range(0, ROWS):
+                if self.board[i][j] == 'X':
+                    self.board[i][j] = 0
+        return
 
     # Find all possible move for current round
     def find_moves(self, player_color):
@@ -227,7 +262,7 @@ class Game:
                         break
             # Finding diagonal
             if (piece[0] - 1, piece[1] - 1) not in opponent_pieces and (
-            piece[0] - 1, piece[1] - 1) not in player_pieces and piece[0] != 0 and piece[1] != 0:
+                    piece[0] - 1, piece[1] - 1) not in player_pieces and piece[0] != 0 and piece[1] != 0:
                 for y, x in zip(range(piece[0] + 1, 8), range(piece[1] + 1, 8)):
                     if (y, x) in player_pieces:
                         valid_moves.append((piece[0] - 1, piece[1] - 1))
@@ -235,7 +270,7 @@ class Game:
                     elif self.board[y][x] == ' ':
                         break
             if (piece[0] + 1, piece[1] + 1) not in opponent_pieces and (
-            piece[0] + 1, piece[1] + 1) not in player_pieces and piece[0] != 8 and piece[1] != 8:
+                    piece[0] + 1, piece[1] + 1) not in player_pieces and piece[0] != 8 and piece[1] != 8:
                 for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] - 1, -1, -1)):
                     if (y, x) in player_pieces:
                         valid_moves.append((piece[0] + 1, piece[1] + 1))
@@ -243,7 +278,7 @@ class Game:
                     elif self.board[y][x] == ' ':
                         break
             if (piece[0] + 1, piece[1] - 1) not in opponent_pieces and (
-            piece[0] + 1, piece[1] - 1) not in player_pieces and piece[0] != 8 and piece[1] != 0:
+                    piece[0] + 1, piece[1] - 1) not in player_pieces and piece[0] != 8 and piece[1] != 0:
                 for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] + 1, 8)):
                     if (y, x) in player_pieces:
                         valid_moves.append((piece[0] + 1, piece[1] - 1))
@@ -251,7 +286,7 @@ class Game:
                     elif self.board[y][x] == ' ':
                         break
             if (piece[0] - 1, piece[1] + 1) not in opponent_pieces and (
-            piece[0] - 1, piece[1] + 1) not in player_pieces and piece[0] != 0 and piece[1] != 8:
+                    piece[0] - 1, piece[1] + 1) not in player_pieces and piece[0] != 0 and piece[1] != 8:
                 for y, x in zip(range(piece[0] + 1, 8), range(piece[1] - 1, -1, -1)):
                     if (y, x) in player_pieces:
                         valid_moves.append((piece[0] - 1, piece[1] + 1))
