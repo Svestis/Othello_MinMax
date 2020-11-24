@@ -16,6 +16,6 @@ if __name__ == '__main__':
     print_hi('AUEB Artificial Intelligence Course Exerscise 1 2020-2021')
 
     # DEBUG MAIN (START)
-    game = othello.start_game('Υ', True)
+    game = othello.start_game('Υ', True, 5)
     game.play()
     # DEBUG MAIN (END)

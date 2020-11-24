@@ -1,4 +1,5 @@
 import numpy as np
+import minimax
 import random
 
 # STATICS
@@ -37,7 +38,7 @@ def row_index(element):
 
 class Game:
 
-    def __init__(self, player_first, show_possible_moves):
+    def __init__(self, player_first, show_possible_moves, difficulty):
         self.player_color = None
         self.computer_color = None
         self.actor_color = None
@@ -46,6 +47,7 @@ class Game:
         self.board = self.create_board()
         self.valid_moves = []
         self.show_possible_moves = show_possible_moves
+        self.difficulty = difficulty
 
     @staticmethod
     def create_board():
@@ -156,6 +158,9 @@ class Game:
 
         print("Turn {}: Your move!".format(len(self.game_history) + 1))
         self.print_board()
+        # random.seed(random.randint(0, 1001))
+        # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
+        # self.set_board(self.valid_moves[random_move], self.player_color)  # TODO this will change, implement AI
         self.handle_player_input(input("Choose and action (move XY or history): "))
         return False
 
@@ -190,9 +195,10 @@ class Game:
         print("Turn {}: Computer is playing...".format(len(self.game_history) + 1))
         self.print_board()
 
-        random.seed(1412)
-        random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
-        self.set_board(self.valid_moves[random_move], self.computer_color)  # TODO this will change, implement AI
+        # random.seed(54736+ random.randint(-1,124125))
+        # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
+        # self.set_board(self.valid_moves[random_move], self.computer_color)  # TODO this will change, implement AI
+        self.set_board(minimax.minimax_move(self.board, self.difficulty))
         return False
 
     # Flip all opponent pieces
@@ -364,7 +370,7 @@ class Game:
                     elif self.board[y][x] == ' ':
                         break
             if (piece[0] + 1, piece[1] + 1) not in opponent_pieces and (
-                    piece[0] + 1, piece[1] + 1) not in player_pieces and piece[0] != 8 and piece[1] != 8:
+                    piece[0] + 1, piece[1] + 1) not in player_pieces and piece[0] != 7 and piece[1] != 7:
                 for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] - 1, -1, -1)):
                     if (y, x) in player_pieces:
                         valid_moves.append((piece[0] + 1, piece[1] + 1))
@@ -372,7 +378,7 @@ class Game:
                     elif self.board[y][x] == ' ':
                         break
             if (piece[0] + 1, piece[1] - 1) not in opponent_pieces and (
-                    piece[0] + 1, piece[1] - 1) not in player_pieces and piece[0] != 8 and piece[1] != 0:
+                    piece[0] + 1, piece[1] - 1) not in player_pieces and piece[0] != 7 and piece[1] != 0:
                 for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] + 1, 8)):
                     if (y, x) in player_pieces:
                         valid_moves.append((piece[0] + 1, piece[1] - 1))
@@ -380,7 +386,7 @@ class Game:
                     elif self.board[y][x] == ' ':
                         break
             if (piece[0] - 1, piece[1] + 1) not in opponent_pieces and (
-                    piece[0] - 1, piece[1] + 1) not in player_pieces and piece[0] != 0 and piece[1] != 8:
+                    piece[0] - 1, piece[1] + 1) not in player_pieces and piece[0] != 0 and piece[1] != 7:
                 for y, x in zip(range(piece[0] + 1, 8), range(piece[1] - 1, -1, -1)):
                     if (y, x) in player_pieces:
                         valid_moves.append((piece[0] - 1, piece[1] + 1))
@@ -438,7 +444,7 @@ class Game:
 
 
 # Creates a Game item
-def start_game(player_color, show_possible_moves):
+def start_game(player_color, show_possible_moves, difficulty):
     if player_color is None:
         player_color = input("Do you want to play first? (Y/N): ")
 
@@ -447,5 +453,5 @@ def start_game(player_color, show_possible_moves):
     else:
         player_color = 'L'
 
-    game = Game(player_color, show_possible_moves)
+    game = Game(player_color, show_possible_moves, difficulty)
     return game
