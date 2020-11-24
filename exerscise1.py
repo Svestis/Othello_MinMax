@@ -1,5 +1,4 @@
 import othello
-import minimax
 import argparse
 
 

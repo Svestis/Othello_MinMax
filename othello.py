@@ -6,6 +6,7 @@ ROWS = 8
 COLUMNS = 8
 col_enumerator = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 row_enumerator = ('1', '2', '3', '4', '5', '6', '7', '8')
+# STATICS (END)
 
 
 # Converts number to column letter
@@ -72,20 +73,21 @@ class Game:
     def set_board(self, move, value):
         def move_exists():
             for valid_move in self.valid_moves:
-                if (move[1], move[0]) == valid_move:
+                if (move[0], move[1]) == valid_move:
                     return True
             return False
 
         if move[0] > 8 or move[1] > 8:
             raise IndexError("Row and column should be less than or equal to 8. Please try again")
         if move_exists():
-            self.board[move[1]][move[0]] = value
+            self.board[move[0]][move[1]] = value
             if value == self.player_color or value == self.computer_color:
                 self.game_history.append((move[0], move[1], value))
+                self.flip_opponent_pieces(move)
             return move
         else:
-            print("Your piece can't be placed in {}{}. It is not a valid move.".format(col_enum(move[0]),
-                                                                                       row_enum(move[1])))
+            print("Your piece can't be placed in {}{}. It is not a valid move.".format(col_enum(move[1]),
+                                                                                       row_enum(move[0])))
             return False
 
     # Print the current board state
@@ -123,9 +125,9 @@ class Game:
         for turn in self.game_history:
             i += 1
             if turn[2] == 'D':
-                print("Turn {}: Dark player placed a piece in {}".format(i, col_enum(turn[0])) + row_enum(turn[1]))
+                print("Turn {}: Dark player placed a piece in {}".format(i, col_enum(turn[1])) + row_enum(turn[0]))
             elif turn[2] == 'L':
-                print("Turn {}: Light player placed a piece in {}".format(i, col_enum(turn[0])) + row_enum(turn[1]))
+                print("Turn {}: Light player placed a piece in {}".format(i, col_enum(turn[1])) + row_enum(turn[0]))
         print("\n")
 
     # Select who is playing
@@ -158,19 +160,17 @@ class Game:
         return False
 
     def handle_player_input(self, player_input):
+        self.reset_all_marks()
         input_split = player_input.split(" ")
         if len(input_split) > 0 and input_split[0] == "move":
             if len(input_split) > 1:
                 # if col_index(input_split[1].__getitem__(0).upper()) and row_index(input_split[1].__getitem__(1)):
                 #     self.handle_player_input(input("Choose and action (move XY or history): "))
                 try:
-                    move = (
-                    (col_index(input_split[1].__getitem__(0).upper())), row_index(input_split[1].__getitem__(1)))
-                    new_piece = self.set_board(move, self.player_color)
+                    move = (row_index(input_split[1].__getitem__(1)), col_index(input_split[1].__getitem__(0).upper()))
+                    new_piece = self.set_board(move, self.actor_color)
                     if not new_piece:
                         self.handle_player_input(input("Choose and action (move XY or history): "))
-                    else:
-                        self.flip_opponent_pieces(new_piece)
                 except:
                     self.handle_player_input(input("Choose and action (move XY or history): "))
             else:
@@ -193,13 +193,107 @@ class Game:
         random.seed(1412)
         random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
         self.set_board(self.valid_moves[random_move], self.computer_color)  # TODO this will change, implement AI
-
         return False
 
     # Flip all opponent pieces
-    def flip_opponent_pieces(self, move):  # TODO this will assist the AI
-
-        self.reset_all_marks()
+    def flip_opponent_pieces(self, piece):
+        if self.actor_color == 'L':
+            opponent_color = 'D'
+        else:
+            opponent_color = 'L'
+        # Finding darks and lights and adding the coordinates in tuple
+        matrix = np.array(self.board)
+        player_pieces_ = np.where(matrix == self.actor_color)
+        player_pieces = set()
+        for i in range(0, len(player_pieces_[0])):
+            player_pieces.add((player_pieces_[0][i], player_pieces_[1][i]))
+        opponent_pieces_ = np.where(matrix == opponent_color)
+        opponent_pieces = set()
+        for i in range(0, len(opponent_pieces_[0])):
+            opponent_pieces.add((opponent_pieces_[0][i], opponent_pieces_[1][i]))
+        pieces_to_flip = []
+        # if (piece[0], piece[1] + 1) not in opponent_pieces and (piece[0], piece[1] + 1) not in player_pieces and piece[1] != 7:
+        for x in range(piece[1] - 1, -1, -1):
+            if (piece[0], x) in opponent_pieces:  # If next piece is opponent's add it to the list
+                pieces_to_flip.append((piece[0], x))
+            elif self.board[piece[0]][x] == self.actor_color:
+                for single_piece in pieces_to_flip:  # If next piece is actor's flip it
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[piece[0]][x] == ' ':  # If next piece is blank
+                break
+        pieces_to_flip.clear()
+        for y in range(piece[0] - 1, -1, -1):
+            if (y, piece[1]) in opponent_pieces:
+                pieces_to_flip.append((y, piece[1]))
+            elif self.board[y][piece[1]] == self.actor_color:
+                for single_piece in pieces_to_flip:
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[y][piece[1]] == ' ':
+                break
+        pieces_to_flip.clear()
+        for x in range(piece[1] + 1, 8):
+            if (piece[0], x) in opponent_pieces:
+                pieces_to_flip.append((piece[0], x))
+            elif self.board[piece[0]][x] == self.actor_color:
+                for single_piece in pieces_to_flip:
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[piece[0]][x] == ' ':
+                break
+        pieces_to_flip.clear()
+        for y in range(piece[0] + 1, 8):
+            if (y, piece[1]) in opponent_pieces:
+                pieces_to_flip.append((y, piece[1]))
+            elif self.board[y][piece[1]] == self.actor_color:
+                for single_piece in pieces_to_flip:
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[y][piece[1]] == ' ':
+                break
+        pieces_to_flip.clear()
+        # Finding diagonal
+        for y, x in zip(range(piece[0] + 1, 8), range(piece[1] + 1, 8)):
+            if (y, x) in opponent_pieces:
+                pieces_to_flip.append((y, x))
+            elif self.board[y][x] == self.actor_color:
+                for single_piece in pieces_to_flip:
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[y][x] == ' ':
+                break
+        pieces_to_flip.clear()
+        for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] - 1, -1, -1)):
+            if (y, x) in opponent_pieces:
+                pieces_to_flip.append((y, x))
+            elif self.board[y][x] == self.actor_color:
+                for single_piece in pieces_to_flip:
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[y][x] == ' ':
+                break
+        pieces_to_flip.clear()
+        for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] + 1, 8)):
+            if (y, x) in opponent_pieces:
+                pieces_to_flip.append((y, x))
+            elif self.board[y][x] == self.actor_color:
+                for single_piece in pieces_to_flip:
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[y][x] == ' ':
+                break
+        pieces_to_flip.clear()
+        for y, x in zip(range(piece[0] + 1, 8), range(piece[1] - 1, -1, -1)):
+            if (y, x) in opponent_pieces:
+                pieces_to_flip.append((y, x))
+            elif self.board[y][x] == self.actor_color:
+                for single_piece in pieces_to_flip:
+                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
+                break
+            elif self.board[y][x] == ' ':
+                break
+        pieces_to_flip.clear()
         return
 
     # Reset all X marks
