@@ -307,10 +307,10 @@ class Board:
                     board_value = board_value + computer_value
                 elif self.board[row][column] == player_color:
                     board_value = board_value + player_value
-            print(board_value)
+            # print(board_value)
         return board_value
 
-    def check_win_conditions(self, player_color, computer_color):
+    def check_win_conditions(self, player_color, computer_color, print_on):
         player_score = 0
         computer_score = 0
         for i in range(0, COLUMNS):
@@ -319,18 +319,23 @@ class Board:
                     player_score += 1
                 elif self.board[i][j] == computer_color:
                     computer_score += 1
-        if player_score > computer_score:
-            print("Victory! Player wins with score {} over Computer's score {} !".format(player_score, computer_score))
-            return 'p'
-        elif player_score < computer_score:
-            print("Defeat! Computer wins with score {} over Player's score {} !".format(computer_score, player_score))
-            return 'c'
-        elif player_score == computer_score:
-            print("Draw! Player and Computer have equal score {} - {} !".format(player_score, computer_score))
-            return '-'
-        elif player_score == 0:
-            print("Defeat! Computer wins with score {} over Player's score {} !".format(64, player_score))
-            return 'c'
-        elif computer_score == 0:
-            print("Victory! Player wins with score {} over Computer's score {} !".format(64, computer_score))
-            return 'p'
+        if print_on:
+            if player_score > computer_score:
+                print("Victory! Player wins with score {} over Computer's score {} !".format(player_score,
+                                                                                             computer_score))
+                return 'p'
+            elif player_score < computer_score:
+                print(
+                    "Defeat! Computer wins with score {} over Player's score {} !".format(computer_score, player_score))
+                return 'c'
+            elif player_score == computer_score:
+                print("Draw! Player and Computer have equal score {} - {} !".format(player_score, computer_score))
+                return '-'
+            elif player_score == 0:
+                print("Defeat! Computer wins with score {} over Player's score {} !".format(64, player_score))
+                return 'c'
+            elif computer_score == 0:
+                print("Victory! Player wins with score {} over Computer's score {} !".format(64, computer_score))
+                return 'p'
+        else:
+            return 0

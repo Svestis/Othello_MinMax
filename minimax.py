@@ -12,12 +12,12 @@ COLUMNS = 8
 # STATICS (END)
 
 def minimax_move(board, max_depth, player_color, computer_color):
-    return maximize(deepcopy(board), 0, max_depth, player_color, computer_color)
+    return maximize(deepcopy(board), 0, max_depth, player_color, computer_color).last_move
 
 
 # noinspection PyUnboundLocalVariable
 def maximize(board, depth, max_depth, player_color, computer_color):
-    play = board.check_win_conditions(player_color, computer_color)
+    play = board.check_win_conditions(player_color, computer_color, False)
     if play == 'c' or play == '-' or depth == max_depth:
         return board
     children = board.get_children(computer_color)
@@ -33,11 +33,11 @@ def maximize(board, depth, max_depth, player_color, computer_color):
         move = minimize(child, depth + 1, max_depth, player_color, computer_color)
         if move.evaluate(computer_color) >= max_value.evaluate(computer_color):
             max_value = child
-    return n_board
+    return max_value
 
 
 def minimize(board, depth, max_depth, player_color, computer_color):
-    play = board.check_win_conditions(player_color, computer_color)
+    play = board.check_win_conditions(player_color, computer_color, False)
     if play == 'd' or play == '-' or depth == max_depth:
         return board
     children = board.get_children(player_color)
@@ -53,4 +53,4 @@ def minimize(board, depth, max_depth, player_color, computer_color):
         move = maximize(child, depth + 1, max_depth, player_color, computer_color)
         if move.evaluate(computer_color) <= min_value.evaluate(computer_color):
             min_value = child
-    return n_board
+    return min_value

@@ -164,13 +164,13 @@ class Game:
     def play(self):
         while True:
             # print("Printing possible moves children")
-            ch = self.boardC.get_children(self.actor_color)
-            for item in ch:
-                item.print_board()
-                # print("Board Value ", item.evaluate(self.computer_color))
+            # ch = self.boardC.get_children(self.actor_color)
+            # for item in ch:
+            #     item.print_board()
+            # print("Board Value ", item.evaluate(self.computer_color))
             result = self.turn()
             if result:
-                self.boardC.check_win_conditions(self.player_color, self.computer_color)
+                self.boardC.check_win_conditions(self.player_color, self.computer_color, True)
                 self.print_history()
                 break
         return 0
