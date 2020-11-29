@@ -1,12 +1,14 @@
-import numpy as np
-import minimax
 import random
+import minimax
+import board
 
 # STATICS
 ROWS = 8
 COLUMNS = 8
 col_enumerator = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 row_enumerator = ('1', '2', '3', '4', '5', '6', '7', '8')
+
+
 # STATICS (END)
 
 
@@ -37,28 +39,16 @@ def row_index(element):
 
 
 class Game:
-
     def __init__(self, player_first, show_possible_moves, difficulty):
         self.player_color = None
         self.computer_color = None
         self.actor_color = None
         self.set_color(player_first)
-        self.game_history = []  # game history is saved as a list of (row, col, actor_color)
-        self.board = self.create_board()
+        self.game_history = []  # game history is saved as a list of
+        self.boardC = board.Board()
         self.valid_moves = []
         self.show_possible_moves = show_possible_moves
         self.difficulty = difficulty
-
-    @staticmethod
-    def create_board():
-        return [[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                [' ', ' ', ' ', 'L', 'D', ' ', ' ', ' '],
-                [' ', ' ', ' ', 'D', 'L', ' ', ' ', ' '],
-                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
     # Set colors based on who is playing first
     def set_color(self, player_first):
@@ -70,52 +60,6 @@ class Game:
             self.player_color = 'L'
             self.computer_color = 'D'
             self.actor_color = self.computer_color
-
-    # Add value to board coordinates
-    def set_board(self, move, value):
-        def move_exists():
-            for valid_move in self.valid_moves:
-                if (move[0], move[1]) == valid_move:
-                    return True
-            return False
-
-        if move[0] > 8 or move[1] > 8:
-            raise IndexError("Row and column should be less than or equal to 8. Please try again")
-        if move_exists():
-            self.board[move[0]][move[1]] = value
-            if value == self.player_color or value == self.computer_color:
-                self.game_history.append((move[0], move[1], value))
-                self.flip_opponent_pieces(move)
-            return move
-        else:
-            print("Your piece can't be placed in {}{}. It is not a valid move.".format(col_enum(move[1]),
-                                                                                       row_enum(move[0])))
-            return False
-
-    # Print the current board state
-    def print_board(self):
-        def print_header():
-            print("     ", end='')
-            for i in range(ord('A'), ord('I')):
-                print(chr(i), end='')
-                print("     ", end='')
-
-        print_header()
-        for i in range(0, ROWS):
-            print("")
-            print("  -------------------------------------------------")
-            print(str(i + 1) + " ", end='')
-
-            for j in range(0, COLUMNS):
-                print("| ", self.board[i][j], " ", end='')
-
-            print("| ", end='')
-            print(str(i + 1) + " ", end='')
-        print("")
-        print("  -------------------------------------------------")
-        print_header()
-        print()
-        print()
 
     # Print all moves made till now
     def print_history(self):
@@ -149,7 +93,7 @@ class Game:
 
     # Select what happens when the player is playing
     def player_move(self):
-        self.valid_moves = self.find_moves(self.player_color)
+        self.valid_moves = self.boardC.find_moves(self.player_color)
         if not self.valid_moves:  # Checks if list is empty
             print("No valid move player turn skipped!")
             return True
@@ -157,7 +101,7 @@ class Game:
             self.set_possible()
 
         print("Turn {}: Your move!".format(len(self.game_history) + 1))
-        self.print_board()
+        self.boardC.print_board()
         # random.seed(random.randint(0, 1001))
         # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
         # self.set_board(self.valid_moves[random_move], self.player_color)  # TODO this will change, implement AI
@@ -169,11 +113,11 @@ class Game:
         input_split = player_input.split(" ")
         if len(input_split) > 0 and input_split[0] == "move":
             if len(input_split) > 1:
-                # if col_index(input_split[1].__getitem__(0).upper()) and row_index(input_split[1].__getitem__(1)):
-                #     self.handle_player_input(input("Choose and action (move XY or history): "))
                 try:
                     move = (row_index(input_split[1].__getitem__(1)), col_index(input_split[1].__getitem__(0).upper()))
-                    new_piece = self.set_board(move, self.actor_color)
+                    (new_piece, self.game_history) = self.boardC.set_board(move, self.actor_color, self.valid_moves,
+                                                                           self.game_history,
+                                                                           self.actor_color)
                     if not new_piece:
                         self.handle_player_input(input("Choose and action (move XY or history): "))
                 except:
@@ -188,259 +132,47 @@ class Game:
 
     # Select what happens when the computer is playing
     def computer_move(self):
-        self.valid_moves = self.find_moves(self.computer_color)
+        self.valid_moves = self.boardC.find_moves(self.computer_color)
         if not self.valid_moves:  # Checks if list is empty
             print("No valid move computer turn skipped!")
             return True
         print("Turn {}: Computer is playing...".format(len(self.game_history) + 1))
-        self.print_board()
+        self.boardC.print_board()
 
-        # random.seed(54736+ random.randint(-1,124125))
+        # random.seed(54736 + random.randint(-1, 124125))
         # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
-        # self.set_board(self.valid_moves[random_move], self.computer_color)  # TODO this will change, implement AI
-        self.set_board(minimax.minimax_move(self.board, self.difficulty))
+        # (x, self.game_history) = self.boardC.set_board(self.valid_moves[random_move], self.computer_color,self.valid_moves, self.game_history,self.actor_color)  # TODO this will change, implement AI
+        self.set_board(minimax.minimax_move(self.board, self, self.difficulty, self.player_color, self.computer_color))
         return False
-
-    # Flip all opponent pieces
-    def flip_opponent_pieces(self, piece):
-        if self.actor_color == 'L':
-            opponent_color = 'D'
-        else:
-            opponent_color = 'L'
-        # Finding darks and lights and adding the coordinates in tuple
-        matrix = np.array(self.board)
-        player_pieces_ = np.where(matrix == self.actor_color)
-        player_pieces = set()
-        for i in range(0, len(player_pieces_[0])):
-            player_pieces.add((player_pieces_[0][i], player_pieces_[1][i]))
-        opponent_pieces_ = np.where(matrix == opponent_color)
-        opponent_pieces = set()
-        for i in range(0, len(opponent_pieces_[0])):
-            opponent_pieces.add((opponent_pieces_[0][i], opponent_pieces_[1][i]))
-        pieces_to_flip = []
-        # if (piece[0], piece[1] + 1) not in opponent_pieces and (piece[0], piece[1] + 1) not in player_pieces and piece[1] != 7:
-        for x in range(piece[1] - 1, -1, -1):
-            if (piece[0], x) in opponent_pieces:  # If next piece is opponent's add it to the list
-                pieces_to_flip.append((piece[0], x))
-            elif self.board[piece[0]][x] == self.actor_color:
-                for single_piece in pieces_to_flip:  # If next piece is actor's flip it
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[piece[0]][x] == ' ':  # If next piece is blank
-                break
-        pieces_to_flip.clear()
-        for y in range(piece[0] - 1, -1, -1):
-            if (y, piece[1]) in opponent_pieces:
-                pieces_to_flip.append((y, piece[1]))
-            elif self.board[y][piece[1]] == self.actor_color:
-                for single_piece in pieces_to_flip:
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[y][piece[1]] == ' ':
-                break
-        pieces_to_flip.clear()
-        for x in range(piece[1] + 1, 8):
-            if (piece[0], x) in opponent_pieces:
-                pieces_to_flip.append((piece[0], x))
-            elif self.board[piece[0]][x] == self.actor_color:
-                for single_piece in pieces_to_flip:
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[piece[0]][x] == ' ':
-                break
-        pieces_to_flip.clear()
-        for y in range(piece[0] + 1, 8):
-            if (y, piece[1]) in opponent_pieces:
-                pieces_to_flip.append((y, piece[1]))
-            elif self.board[y][piece[1]] == self.actor_color:
-                for single_piece in pieces_to_flip:
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[y][piece[1]] == ' ':
-                break
-        pieces_to_flip.clear()
-        # Finding diagonal
-        for y, x in zip(range(piece[0] + 1, 8), range(piece[1] + 1, 8)):
-            if (y, x) in opponent_pieces:
-                pieces_to_flip.append((y, x))
-            elif self.board[y][x] == self.actor_color:
-                for single_piece in pieces_to_flip:
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[y][x] == ' ':
-                break
-        pieces_to_flip.clear()
-        for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] - 1, -1, -1)):
-            if (y, x) in opponent_pieces:
-                pieces_to_flip.append((y, x))
-            elif self.board[y][x] == self.actor_color:
-                for single_piece in pieces_to_flip:
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[y][x] == ' ':
-                break
-        pieces_to_flip.clear()
-        for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] + 1, 8)):
-            if (y, x) in opponent_pieces:
-                pieces_to_flip.append((y, x))
-            elif self.board[y][x] == self.actor_color:
-                for single_piece in pieces_to_flip:
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[y][x] == ' ':
-                break
-        pieces_to_flip.clear()
-        for y, x in zip(range(piece[0] + 1, 8), range(piece[1] - 1, -1, -1)):
-            if (y, x) in opponent_pieces:
-                pieces_to_flip.append((y, x))
-            elif self.board[y][x] == self.actor_color:
-                for single_piece in pieces_to_flip:
-                    self.board[single_piece[0]][single_piece[1]] = self.actor_color
-                break
-            elif self.board[y][x] == ' ':
-                break
-        pieces_to_flip.clear()
-        return
 
     # Reset all X marks
     def reset_all_marks(self):
         for i in range(0, COLUMNS):
             for j in range(0, ROWS):
-                if self.board[i][j] == 'X':
-                    self.board[i][j] = ' '
+                if self.boardC.board[i][j] == 'X':
+                    self.boardC.board[i][j] = ' '
         return
-
-    # Find all possible move for current round
-    def find_moves(self, player_color):
-        if player_color == 'L':
-            opponent_color = 'D'
-        else:
-            opponent_color = 'L'
-        # Finding darks and lights and adding the coordinates in tuple
-        matrix = np.array(self.board)
-        player_pieces_ = np.where(matrix == player_color)
-        player_pieces = set()
-        for i in range(0, len(player_pieces_[0])):
-            player_pieces.add((player_pieces_[0][i], player_pieces_[1][i]))
-        opponent_pieces_ = np.where(matrix == opponent_color)
-        opponent_pieces = set()
-        for i in range(0, len(opponent_pieces_[0])):
-            opponent_pieces.add((opponent_pieces_[0][i], opponent_pieces_[1][i]))
-        valid_moves = []
-        diagonal = set()
-        # print("Player pieces: {}".format(player_pieces))
-        # print("Opponent pieces: {}".format(opponent_pieces))
-        # Finding valid moves (valid=being around opposite color). Checking also border condition
-        for piece in opponent_pieces:
-            if (piece[0], piece[1] + 1) not in opponent_pieces and (piece[0], piece[1] + 1) not in player_pieces and \
-                    piece[1] != 7:
-                for x in range(piece[1] - 1, -1, -1):
-                    if (piece[0], x) in player_pieces:
-                        valid_moves.append((piece[0], piece[1] + 1))
-                    elif self.board[piece[0]][x] == ' ':
-                        break
-            if (piece[0] + 1, piece[1]) not in opponent_pieces and (piece[0] + 1, piece[1]) not in player_pieces and \
-                    piece[0] != 7:
-                for y in range(piece[0] - 1, -1, -1):
-                    if (y, piece[1]) in player_pieces:
-                        valid_moves.append((piece[0] + 1, piece[1]))
-                    elif self.board[y][piece[1]] == ' ':
-                        break
-            if (piece[0], piece[1] - 1) not in opponent_pieces and (piece[0], piece[1] - 1) not in player_pieces and \
-                    piece[1] != 0:
-                for x in range(piece[1] + 1, 8):
-                    if (piece[0], x) in player_pieces:
-                        valid_moves.append((piece[0], piece[1] - 1))
-                    elif self.board[piece[0]][x] == ' ':
-                        break
-            if (piece[0] - 1, piece[1]) not in opponent_pieces and (piece[0] - 1, piece[1]) not in player_pieces and \
-                    piece[0] != 0:
-                for y in range(piece[0] + 1, 8):
-                    if (y, piece[1]) in player_pieces:
-                        valid_moves.append((piece[0] - 1, piece[1]))
-                    elif self.board[y][piece[1]] == ' ':
-                        break
-            # Finding diagonal
-            if (piece[0] - 1, piece[1] - 1) not in opponent_pieces and (
-                    piece[0] - 1, piece[1] - 1) not in player_pieces and piece[0] != 0 and piece[1] != 0:
-                for y, x in zip(range(piece[0] + 1, 8), range(piece[1] + 1, 8)):
-                    if (y, x) in player_pieces:
-                        valid_moves.append((piece[0] - 1, piece[1] - 1))
-                        diagonal.add((piece[0] - 1, piece[1] - 1))
-                    elif self.board[y][x] == ' ':
-                        break
-            if (piece[0] + 1, piece[1] + 1) not in opponent_pieces and (
-                    piece[0] + 1, piece[1] + 1) not in player_pieces and piece[0] != 7 and piece[1] != 7:
-                for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] - 1, -1, -1)):
-                    if (y, x) in player_pieces:
-                        valid_moves.append((piece[0] + 1, piece[1] + 1))
-                        diagonal.add((piece[0] + 1, piece[1] + 1))
-                    elif self.board[y][x] == ' ':
-                        break
-            if (piece[0] + 1, piece[1] - 1) not in opponent_pieces and (
-                    piece[0] + 1, piece[1] - 1) not in player_pieces and piece[0] != 7 and piece[1] != 0:
-                for y, x in zip(range(piece[0] - 1, -1, -1), range(piece[1] + 1, 8)):
-                    if (y, x) in player_pieces:
-                        valid_moves.append((piece[0] + 1, piece[1] - 1))
-                        diagonal.add((piece[0] + 1, piece[1] - 1))
-                    elif self.board[y][x] == ' ':
-                        break
-            if (piece[0] - 1, piece[1] + 1) not in opponent_pieces and (
-                    piece[0] - 1, piece[1] + 1) not in player_pieces and piece[0] != 0 and piece[1] != 7:
-                for y, x in zip(range(piece[0] + 1, 8), range(piece[1] - 1, -1, -1)):
-                    if (y, x) in player_pieces:
-                        valid_moves.append((piece[0] - 1, piece[1] + 1))
-                        diagonal.add((piece[0] - 1, piece[1] + 1))
-                    elif self.board[y][x] == ' ':
-                        break
-
-        # print("Valid Moves before diagonal: {}".format(valid_moves))
-        # Finding actual valid moves
-        for (row_v, col_v) in valid_moves.copy():
-            exists_in_player = False
-            for (row, col) in player_pieces:
-                if col == col_v or row == row_v or (row_v, col_v) in diagonal:
-                    exists_in_player = True
-            if not exists_in_player:
-                valid_moves.remove((row_v, col_v))
-
-        self.valid_moves = valid_moves
-        return self.valid_moves
 
     def set_possible(self):
         # print("Valid Moves final: {}".format(self.valid_moves))
         for move in self.valid_moves:
-            self.set_board(move, 'X')
+            self.boardC.set_board(move, 'X', self.valid_moves, self.game_history,
+                                  self.actor_color)
 
     # Starts the actual game
     def play(self):
         while True:
+            # print("Printing possible moves children")
+            ch = self.boardC.get_children(self.actor_color)
+            for item in ch:
+                item.print_board()
+                # print("Board Value ", item.evaluate(self.computer_color))
             result = self.turn()
             if result:
-                self.check_win_conditions()
+                self.boardC.check_win_conditions(self.player_color, self.computer_color)
+                self.print_history()
                 break
         return 0
-
-    def check_win_conditions(self):
-        player_score = 0
-        computer_score = 0
-        for i in range(0, COLUMNS):
-            for j in range(0, ROWS):
-                if self.board[i][j] == self.player_color:
-                    player_score += 1
-                elif self.board[i][j] == self.computer_color:
-                    computer_score += 1
-        if player_score > computer_score:
-            print("Victory! Player wins with score {} over Computer's score {} !".format(player_score, computer_score))
-        elif player_score < computer_score:
-            print("Defeat! Computer wins with score {} over Player's score {} !".format(computer_score, player_score))
-        elif player_score == computer_score:
-            print("Draw! Player and Computer have equal score {} - {} !".format(player_score, computer_score))
-        elif player_score == 0:
-            print("Defeat! Computer wins with score {} over Player's score {} !".format(64, player_score))
-        elif computer_score == 0:
-            print("Victory! Player wins with score {} over Computer's score {} !".format(64, computer_score))
-        self.print_history()
 
 
 # Creates a Game item
