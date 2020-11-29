@@ -86,7 +86,6 @@ class Board:
         print_header()
         print()
         print()
-        print(self.last_move)
 
     def flip_opponent_pieces(self, piece, actor_color):
         if actor_color == 'L':
