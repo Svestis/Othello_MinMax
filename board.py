@@ -6,8 +6,6 @@ ROWS = 8
 COLUMNS = 8
 col_enumerator = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
 row_enumerator = ('1', '2', '3', '4', '5', '6', '7', '8')
-
-
 # STATICS (END)
 
 # Converts number to column letter
@@ -50,8 +48,8 @@ class Board:
                     return True
             return False
 
-        if move[0] > 8 or move[1] > 8:
-            raise IndexError("Row and column should be less than or equal to 8. Please try again")
+        if move[0] > ROWS or move[1] > COLUMNS:
+            print("Your piece can't be placed in outside of the board. Invalid move.")
         if move_exists():
             self.board[move[0]][move[1]] = value
             if value == 'D' or value == 'L':

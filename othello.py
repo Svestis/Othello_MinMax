@@ -142,7 +142,9 @@ class Game:
         # random.seed(54736 + random.randint(-1, 124125))
         # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
         # (x, self.game_history) = self.boardC.set_board(self.valid_moves[random_move], self.computer_color,self.valid_moves, self.game_history,self.actor_color)  # TODO this will change, implement AI
-        self.set_board(minimax.minimax_move(self.board, self, self.difficulty, self.player_color, self.computer_color))
+        self.boardC.set_board(
+            minimax.minimax_move(self.boardC, self.difficulty, self.player_color, self.computer_color),
+            self.computer_color, self.valid_moves, self.game_history, self.actor_color)
         return False
 
     # Reset all X marks
@@ -156,8 +158,7 @@ class Game:
     def set_possible(self):
         # print("Valid Moves final: {}".format(self.valid_moves))
         for move in self.valid_moves:
-            self.boardC.set_board(move, 'X', self.valid_moves, self.game_history,
-                                  self.actor_color)
+            self.boardC.set_board(move, 'X', self.valid_moves, self.game_history, self.actor_color)
 
     # Starts the actual game
     def play(self):

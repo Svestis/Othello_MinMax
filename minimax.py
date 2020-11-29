@@ -1,7 +1,7 @@
 # def minimax_move(board, difficulty):
 #     return move
 
-import board
+import board as board_class
 from copy import deepcopy
 
 # STATICS
@@ -11,7 +11,7 @@ COLUMNS = 8
 
 # STATICS (END)
 
-def minimax_move(board, game, max_depth, player_color, computer_color):
+def minimax_move(board, max_depth, player_color, computer_color):
     return maximize(deepcopy(board), 0, max_depth, player_color, computer_color)
 
 
@@ -27,11 +27,11 @@ def maximize(board, depth, max_depth, player_color, computer_color):
         for column in range(0, COLUMNS):
             n_board_sublist.append(player_color)
         n_board_list.append(n_board_sublist)
-    n_board = board.Board(n_board_list)
-    max_value: board.Board = n_board.evaluate(computer_color)
+    n_board = board_class.Board(n_board_list)
+    max_value = n_board
     for child in children:
         move = minimize(child, depth + 1, max_depth, player_color, computer_color)
-        if move.evaluate(computer_color) >= max_value:
+        if move.evaluate(computer_color) >= max_value.evaluate(computer_color):
             max_value = child
     return n_board
 
@@ -47,8 +47,8 @@ def minimize(board, depth, max_depth, player_color, computer_color):
         for column in range(0, COLUMNS):
             n_board_sublist.append(computer_color)
         n_board_list.append(n_board_sublist)
-    n_board = board.Board(n_board_list)
-    min_value: board.Board = n_board.evaluate(computer_color)
+    n_board = board_class.Board(n_board_list)
+    min_value = n_board
     for child in children:
         move = maximize(child, depth + 1, max_depth, player_color, computer_color)
         if move.evaluate(computer_color) <= min_value.evaluate(computer_color):
