@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 import minimax
 import board
 
@@ -142,9 +143,12 @@ class Game:
         # random.seed(54736 + random.randint(-1, 124125))
         # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
         # (x, self.game_history) = self.boardC.set_board(self.valid_moves[random_move], self.computer_color,self.valid_moves, self.game_history,self.actor_color)  # TODO this will change, implement AI
-        self.boardC.set_board(
-            minimax.minimax_move(self.boardC, self.difficulty, self.player_color, self.computer_color),
-            self.computer_color, self.valid_moves, self.game_history, self.actor_color)
+        time_before = datetime.now()
+        move = minimax.minimax_move(self.boardC, self.difficulty, self.player_color, self.computer_color)
+        time_after = datetime.now()
+        self.boardC.set_board(move, self.computer_color, self.valid_moves, self.game_history, self.actor_color)
+        print("Computer played in {}{}. It took {} seconds".format(col_enum(move[1]), row_enum(move[0]),
+                                                                   time_after - time_before))
         return False
 
     # Reset all X marks
