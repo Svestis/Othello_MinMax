@@ -1,26 +1,41 @@
-import random
+"""
+othello file including gameplay handling
+"""
+# Import needed modules
+from typing import Tuple
+
 import minimax
 import board
 
 # STATICS
-ROWS = 8
-COLUMNS = 8
-col_enumerator = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
-row_enumerator = ('1', '2', '3', '4', '5', '6', '7', '8')
-
-
+ROWS: int = 8
+COLUMNS: int = 8
+col_enumerator: Tuple[str, str, str, str, str, str, str, str] = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
+row_enumerator: Tuple[str, str, str, str, str, str, str, str] = ('1', '2', '3', '4', '5', '6', '7', '8')
 # STATICS (END)
 
 
-# Converts number to column letter
 def col_enum(index):
+    """
+    Converts number to column letter using the col_enumerator variable
+    :param index: The index number of a move (list index value)
+    :type index: int
+    :return: The column name as in col_enumerator
+    :rtype: str
+    """
     if index < len(col_enumerator):
         return col_enumerator[index]
     return False
 
 
-# Converts number to row number
 def row_enum(index):
+    """
+    Converts number to row number using the row_enumerator variable
+    :param index: The index number of a move (list index value)
+    :type index: int
+    :return: The row number as in row_enumerator
+    :rtype: str
+    """
     if index < len(row_enumerator):
         return row_enumerator[index]
     return False
