@@ -15,7 +15,7 @@ def parse_arguments():
 if __name__ == '__main__':
     print_hi('AUEB Artificial Intelligence Course Exerscise 1 2020-2021')
     # DEBUG MAIN (START)
-    game = othello.start_game('Υ', True, 5)
+    game = othello.start_game('Υ', True, 6)
     difficulty = game.difficulty  # TODO add reading from user and max value check at 10
     player_color = game.player_color
     game.play()

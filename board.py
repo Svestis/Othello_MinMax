@@ -293,23 +293,6 @@ class Board:
             children.append(child)
         return children
 
-    def evaluate(self, computer_color):
-        board_value = 0
-        computer_value = 1
-        player_value = -1
-        if computer_color == 'L':
-            player_color = 'D'
-        else:
-            player_color = 'L'
-        for row in range(0, ROWS):
-            for column in range(0, COLUMNS):
-                if self.board[row][column] == computer_color:
-                    board_value = board_value + computer_value
-                elif self.board[row][column] == player_color:
-                    board_value = board_value + player_value
-            # print(board_value)
-        return board_value
-
     def check_win_conditions(self, player_color, computer_color, print_on):
         player_score = 0
         computer_score = 0
@@ -339,3 +322,24 @@ class Board:
                 return 'p'
         else:
             return 0
+
+    def evaluate(self, computer_color):
+        board_value = 0
+        computer_value = 1
+        player_value = -1
+        if computer_color == 'L':
+            player_color = 'D'
+        else:
+            player_color = 'L'
+        for row in range(0, ROWS):
+            for column in range(0, COLUMNS):
+                if self.board[row][column] == computer_color:
+                    board_value = board_value + computer_value
+                elif self.board[row][column] == player_color:
+                    board_value = board_value + player_value
+        if self.check_win_conditions(player_color, computer_color, False)=='p':
+            board_value = board_value+(player_value*100)
+        elif self.check_win_conditions(player_color, computer_color, False)=='c':
+            board_value = board_value+(computer_color*100)
+
+        return board_value
