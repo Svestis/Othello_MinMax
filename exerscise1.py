@@ -14,7 +14,7 @@ def print_hi(name: str ):
     :return: Nothing
     :rtype: N/A
     """
-    print(f'Hi, {name: str}')
+    print(f'Hi, {name}')
     print()
 
 
