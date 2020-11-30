@@ -20,7 +20,7 @@ def col_enum(index: int):
     :param index: The index number of a move (list index value)
     :type index: int
     :return: The column name as in col_enumerator
-    :rtype: str
+    :rtype: int
     """
     if index < len(col_enumerator):
         return col_enumerator[index]
@@ -33,7 +33,7 @@ def row_enum(index: int):
     :param index: The index number of a move (list index value)
     :type index: int
     :return: The row number as in row_enumerator
-    :rtype: str
+    :rtype: int
     """
     if index < len(row_enumerator):
         return row_enumerator[index]

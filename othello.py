@@ -3,7 +3,6 @@ othello file including gameplay handling
 """
 # Import needed modules
 from typing import Tuple
-
 import minimax
 import board
 
@@ -21,7 +20,7 @@ def col_enum(index):
     :param index: The index number of a move (list index value)
     :type index: int
     :return: The column name as in col_enumerator
-    :rtype: str
+    :rtype: int
     """
     if index < len(col_enumerator):
         return col_enumerator[index]
@@ -34,7 +33,7 @@ def row_enum(index):
     :param index: The index number of a move (list index value)
     :type index: int
     :return: The row number as in row_enumerator
-    :rtype: str
+    :rtype: int
     """
     if index < len(row_enumerator):
         return row_enumerator[index]
@@ -42,18 +41,51 @@ def row_enum(index):
 
 
 # Get column index from element
-def col_index(element):
-    index = col_enumerator.index(element)
+def col_index(element: str):
+    """
+    Returning the column index by using the col_enumerator function
+    :param element: A string with the element
+    :type element: str
+    :return: The index in the list of the element
+    :rtype: int
+    """
+    index: int = col_enumerator.index(element)
     return index
 
 
 # Get row index from element
 def row_index(element):
+    """
+    Return the row index by using the row_enumerator function
+    :param element: A string with the element
+    :type element: str
+    :return: The inxed in the list of the element
+    :rtype: int
+    """
     index = row_enumerator.index(element)
     return index
 
 
 class Game:
+    """
+    Glass game handling te game play
+    :var self.player_color: The color of the player
+    :type self.player_color: str
+    :var self.computer_color: The color of the computer
+    :type self.computer_color: str
+    :var self.actor_color: The color of the current color
+    :type self.actor_color: str
+    :var self.game_history: All the boards in the game_history
+    :type self.game_history: list
+    :var self.boardC: The board of the gameplay
+    :type self.boardC: board.Board
+    :var self.valid_moves: The valid moves of the current state of the game
+    :type self.valid_moves: list
+    :var self.show_possible_moves: A flag to show or not the possible moves
+    :type self.show_possible_moves: bool
+    :var self.difficulty: The selected difficulty
+    :type self.diffulty: int
+    """
     def __init__(self, player_first, show_possible_moves, difficulty):
         self.player_color = None
         self.computer_color = None
