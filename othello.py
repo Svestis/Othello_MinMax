@@ -86,16 +86,25 @@ class Game:
     :var self.difficulty: The selected difficulty
     :type self.diffulty: int
     """
-    def __init__(self, player_first, show_possible_moves, difficulty):
+    def __init__(self, player_first: bool, show_possible_moves: bool, difficulty: int):
+        """
+        __init__ function
+        :param player_first: A value showing who is playing first
+        :type player_first: bool
+        :param show_possible_moves: Indicating if the possible moves will be displayed or not
+        :type show_possible_moves: bool
+        :param difficulty: The difficulty level
+        :type difficulty: int
+        """
         self.player_color = None
         self.computer_color = None
         self.actor_color = None
         self.set_color(player_first)
-        self.game_history = []  # game history is saved as a list of
-        self.boardC = board.Board()
-        self.valid_moves = []
-        self.show_possible_moves = show_possible_moves
-        self.difficulty = difficulty
+        self.game_history: list = []  # game history is saved as a list of
+        self.boardC: board.Board = board.Board()
+        self.valid_moves: list = []
+        self.show_possible_moves: bool = show_possible_moves
+        self.difficulty: int = difficulty
 
     # Set colors based on who is playing first
     def set_color(self, player_first):
