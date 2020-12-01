@@ -168,12 +168,12 @@ class Board:
     def flip_opponent_pieces(self, piece: tuple, actor_color: str):
         """
         Flipping the opponent pieces after placing a new checker
-        :param piece:
-        :type piece:
-        :param actor_color:
-        :type actor_color:
-        :return:
-        :rtype:
+        :param piece: The piece which we are going to place on the board
+        :type piece: tuple
+        :param actor_color: The color of the current player (being human or pc)
+        :type actor_color: str
+        :return: The updated board list
+        :rtype: list
         """
         # Checking who is who
         if actor_color == 'L':
@@ -372,7 +372,7 @@ class Board:
                     elif self.board[y][x] == ' ':
                         break
 
-        # Finding actual valid moves (not being used)
+        # Finding actual valid moves
         for (row_v, col_v) in valid_moves.copy():
             exists_in_player: bool = False
             for (row, col) in player_pieces:
