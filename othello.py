@@ -234,12 +234,12 @@ class Game:
 
 
 # Creates a Game item
-def start_game(player_color, show_possible_moves, difficulty):
+def start_game(player_color, show_possible_moves, difficulty): # TODO switching color does not work
     if player_color is None:
         player_color = input("Do you want to play first? (Y/N): ")
 
     if player_color == 'Y':
-        player_color = 'D'
+        player_color = 'D' # TODO by convention dark plays first. Do you think that we should change it?
     else:
         player_color = 'L'
 
