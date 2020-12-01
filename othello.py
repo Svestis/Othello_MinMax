@@ -106,7 +106,6 @@ class Game:
         self.show_possible_moves: bool = show_possible_moves
         self.difficulty: int = difficulty
 
-
     # Set colors based on who is playing first
     def set_color(self, player_first):
         if player_first:
