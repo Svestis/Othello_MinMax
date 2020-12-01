@@ -53,6 +53,7 @@ if __name__ == '__main__':
         if arguments.get('po') == 'True':
             po = True
         df: int = arguments.get('df')
+
     name: str = input("Welcome, what's your name?\n")
     print_hi(name)
     # DEBUG MAIN (START)
