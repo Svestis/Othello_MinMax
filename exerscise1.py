@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 exercise1 file including game start
 """

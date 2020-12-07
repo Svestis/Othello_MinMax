@@ -99,7 +99,7 @@ class Game:
         self.player_color = None
         self.computer_color = None
         self.actor_color = None
-        self.set_color(player_first)
+        self.set_colors(player_first)
         self.game_history: list = []  # game history is saved as a list of
         self.boardC: board.Board = board.Board()
         self.valid_moves: list = []
@@ -107,7 +107,7 @@ class Game:
         self.difficulty: int = difficulty
 
     # Set colors based on who is playing first
-    def set_color(self, player_first):
+    def set_colors(self, player_first: bool):
         if player_first:
             self.player_color = 'D'
             self.computer_color = 'L'
@@ -133,8 +133,7 @@ class Game:
         print("\n")
 
     # Select who is playing
-    def turn(self):
-        global player_skipped, computer_skipped
+    def turn(self, player_skipped, computer_skipped):
         if self.actor_color == self.player_color:
             player_skipped = self.player_move()
             self.actor_color = self.computer_color
@@ -224,7 +223,7 @@ class Game:
             # for item in ch:
             #     item.print_board()
             # print("Board Value ", item.evaluate(self.computer_color))
-            result = self.turn()
+            result = self.turn(False, False)
             if result:
                 self.boardC.check_win_conditions(self.player_color, self.computer_color, True)
                 self.print_history()
@@ -233,14 +232,17 @@ class Game:
 
 
 # Creates a Game item
-def start_game(player_color, show_possible_moves, difficulty): # TODO switching color does not work
-    if player_color is None:
-        player_color = input("Do you want to play first? (Y/N): ")
+def start_game(player_first, show_possible_moves, difficulty):  # TODO switching color does not work
+    if player_first is None:
+        condition = True
+        while condition:
+            player_first = input("Do you want to play first? (Y/N): ")
+            if player_first == 'Y':
+                player_first = True
+                condition = False
+            elif player_first == 'N':
+                player_first = False
+                condition = False
 
-    if player_color == 'Y':
-        player_color = 'D' # TODO by convention dark plays first. Do you think that we should change it?
-    else:
-        player_color = 'L'
-
-    game = Game(player_color, show_possible_moves, difficulty)
+    game = Game(player_first, show_possible_moves, difficulty)
     return game
