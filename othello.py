@@ -141,8 +141,18 @@ class Game:
             computer_skipped = self.computer_move()
             self.actor_color = self.player_color
 
-        if player_skipped and computer_skipped:
-            return True
+        if player_skipped:
+            computer_skipped = self.computer_move()
+            self.actor_color = self.player_color()
+            if computer_skipped:
+                self.boardC.print_board()
+                return True
+        elif computer_skipped:
+            player_skipped = self.player_move()
+            self.actor_color = self.computer_color
+            if player_skipped:
+                self.boardC.print_board()
+                return True
 
         return False
 
@@ -157,9 +167,6 @@ class Game:
 
         print("Turn {}: Your move!".format(len(self.game_history) + 1))
         self.boardC.print_board()
-        # random.seed(random.randint(0, 1001))
-        # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
-        # self.set_board(self.valid_moves[random_move], self.player_color)  # TODO this will change, implement AI
         self.handle_player_input(input("Choose and action (move XY or history): "))
         return False
 
@@ -194,9 +201,6 @@ class Game:
         print("Turn {}: Computer is playing...".format(len(self.game_history) + 1))
         self.boardC.print_board()
 
-        # random.seed(54736 + random.randint(-1, 124125))
-        # random_move = random.randint(0, len(self.valid_moves) - 1)  # TODO this will change, implement AI
-        # (x, self.game_history) = self.boardC.set_board(self.valid_moves[random_move], self.computer_color,self.valid_moves, self.game_history,self.actor_color)  # TODO this will change, implement AI
         self.boardC.set_board(
             minimax.minimax_move(self.boardC, self.difficulty, self.player_color, self.computer_color),
             self.computer_color, self.valid_moves, self.game_history, self.actor_color)
@@ -211,18 +215,12 @@ class Game:
         return
 
     def set_possible(self):
-        # print("Valid Moves final: {}".format(self.valid_moves))
         for move in self.valid_moves:
             self.boardC.set_board(move, 'X', self.valid_moves, self.game_history, self.actor_color)
 
     # Starts the actual game
     def play(self):
         while True:
-            # print("Printing possible moves children")
-            # ch = self.boardC.get_children(self.actor_color)
-            # for item in ch:
-            #     item.print_board()
-            # print("Board Value ", item.evaluate(self.computer_color))
             result = self.turn(False, False)
             if result:
                 self.boardC.check_win_conditions(self.player_color, self.computer_color, True)
@@ -232,7 +230,7 @@ class Game:
 
 
 # Creates a Game item
-def start_game(player_first, show_possible_moves, difficulty):  # TODO switching color does not work
+def start_game(player_first, show_possible_moves, difficulty):
     if player_first is None:
         condition = True
         while condition:
