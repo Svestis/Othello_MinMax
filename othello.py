@@ -164,8 +164,8 @@ class Game:
 
         # Checking if both player and computer skipped in order to end game
         if player_skipped:
-            computer_skipped: bool = self.computer_move()
-            self.actor_color: str = self.player_color()
+            computer_skipped = self.computer_move()
+            self.actor_color = self.player_color
             if computer_skipped:
                 self.boardC.print_board()
                 return True
