@@ -108,18 +108,30 @@ class Game:
 
     # Set colors based on who is playing first
     def set_colors(self, player_first: bool):
+        """
+        Setting player color according to who is playing first
+        :param player_first: A value indicating if the player is playing first
+        :type player_first: bool
+        :return: Nothing
+        :rtype: N/A
+        """
         if player_first:
-            self.player_color = 'D'
-            self.computer_color = 'L'
-            self.actor_color = self.player_color
+            self.player_color: str = 'D'
+            self.computer_color: str = 'L'
+            self.actor_color: str = self.player_color
         else:
-            self.player_color = 'L'
-            self.computer_color = 'D'
-            self.actor_color = self.computer_color
+            self.player_color: str = 'L'
+            self.computer_color: str = 'D'
+            self.actor_color: str = self.computer_color
 
     # Print all moves made till now
     def print_history(self):
-        i = 0
+        """
+        Printing the move history
+        :return: Nothing
+        :rtype: N/A
+        """
+        i: int = 0
         print("\nGame History:")
         if not self.game_history:
             print("No moves were made yet!\n")
@@ -133,32 +145,46 @@ class Game:
         print("\n")
 
     # Select who is playing
-    def turn(self, player_skipped, computer_skipped):
+    def turn(self, player_skipped: bool, computer_skipped: bool):
+        """
+        Chaning players during game play
+        :param player_skipped: Checking if the player skipped due to no available moves
+        :type player_skipped: bool
+        :param computer_skipped: Checking if the computer skipped due to no available moves
+        :return: True if the both player and computer skipped meaning that gameplay ends, False if gameplay continues
+        :rtype: bool
+        """
+        # Changing players
         if self.actor_color == self.player_color:
-            player_skipped = self.player_move()
-            self.actor_color = self.computer_color
+            player_skipped: bool = self.player_move()
+            self.actor_color: str = self.computer_color
         else:
-            computer_skipped = self.computer_move()
-            self.actor_color = self.player_color
+            computer_skipped: bool = self.computer_move()
+            self.actor_color: str = self.player_color
 
+        # Checking if both player and computer skipped in order to end game
         if player_skipped:
-            computer_skipped = self.computer_move()
-            self.actor_color = self.player_color()
+            computer_skipped: bool = self.computer_move()
+            self.actor_color: str = self.player_color()
             if computer_skipped:
                 self.boardC.print_board()
                 return True
         elif computer_skipped:
-            player_skipped = self.player_move()
-            self.actor_color = self.computer_color
+            player_skipped: bool = self.player_move()
+            self.actor_color: str = self.computer_color
             if player_skipped:
                 self.boardC.print_board()
                 return True
-
         return False
 
     # Select what happens when the player is playing
     def player_move(self):
-        self.valid_moves = self.boardC.find_moves(self.player_color)
+        """
+        Handles the player_move behavior
+        :return: If there any moves left (True if not, False if yes)
+        :rtype bool
+        """
+        self.valid_moves: list = self.boardC.find_moves(self.player_color)
         if not self.valid_moves:  # Checks if list is empty
             print("No valid move player turn skipped!")
             return True
@@ -170,9 +196,16 @@ class Game:
         self.handle_player_input(input("Choose and action (move XY or history): "))
         return False
 
-    def handle_player_input(self, player_input):
+    def handle_player_input(self, player_input: str):
+        """
+        Handles player input (move or history display )
+        :param player_input: What the player wants to do
+        :type player_input: str
+        :return: Nothing
+        :rtype: N/A
+        """
         self.reset_all_marks()
-        input_split = player_input.split(" ")
+        input_split: list = player_input.split(" ")
         if len(input_split) > 0 and input_split[0] == "move":
             if len(input_split) > 1:
                 try:
@@ -194,6 +227,11 @@ class Game:
 
     # Select what happens when the computer is playing
     def computer_move(self):
+        """
+        Hanles the computer behavior (calling AI)
+        :return: If there any moves left (True if not, False if yes)
+        :rtype: bool
+        """
         self.valid_moves = self.boardC.find_moves(self.computer_color)
         if not self.valid_moves:  # Checks if list is empty
             print("No valid move computer turn skipped!")
@@ -208,6 +246,11 @@ class Game:
 
     # Reset all X marks
     def reset_all_marks(self):
+        """
+        Resetting possible moves markes to blank
+        :return: Nothing
+        :rtype: N/A
+        """
         for i in range(0, COLUMNS):
             for j in range(0, ROWS):
                 if self.boardC.board[i][j] == 'X':
@@ -215,11 +258,21 @@ class Game:
         return
 
     def set_possible(self):
+        """
+        Displaying possible moves as x on the board
+        :return: Nothing
+        :rtype: N/A
+        """
         for move in self.valid_moves:
             self.boardC.set_board(move, 'X', self.valid_moves, self.game_history, self.actor_color)
 
     # Starts the actual game
     def play(self):
+        """
+        Starts the game and keep on playing till finish
+        :return: Nothing
+        :rtype: N/A
+        """
         while True:
             result = self.turn(False, False)
             if result:
@@ -230,7 +283,18 @@ class Game:
 
 
 # Creates a Game item
-def start_game(player_first, show_possible_moves, difficulty):
+def start_game(player_first: bool, show_possible_moves: bool, difficulty: int):
+    """
+    Creates a game item to start the game
+    :param player_first: Input on if the player wants to play first
+    :type player_first: bool
+    :param show_possible_moves: Input on if the possible moves shall be shown
+    :type show_possible_moves: bool
+    :param difficulty: The difficulty is the actual depth of minimax (max 10)
+    :type difficulty: int
+    :return: An instance of the game
+    :rtype: Game
+    """
     if player_first is None:
         condition = True
         while condition:
@@ -242,5 +306,5 @@ def start_game(player_first, show_possible_moves, difficulty):
                 player_first = False
                 condition = False
 
-    game = Game(player_first, show_possible_moves, difficulty)
+    game: Game = Game(player_first, show_possible_moves, difficulty)
     return game
