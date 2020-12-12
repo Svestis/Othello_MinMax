@@ -462,18 +462,56 @@ class Board:
         else:
             player_color: str = 'L'
 
-        # Iterate through board
+        # Iter through the board tiles
         for row in range(0, ROWS):
             for column in range(0, COLUMNS):
-                if self.board[row][column] == computer_color:
-                    board_value: int = board_value + computer_value
-                elif self.board[row][column] == player_color:
-                    board_value: int = board_value + player_value
+                evaluation = 1
 
-        # In case of game win add 100 to the winner value
+                # Adj
+                if (row == 0 and column == 1) or (row == 1 and 0 <= column <= 1):
+                    if self.board[0][0] == computer_color:
+                        evaluation = 5
+                    else:
+                        evaluation = -5
+
+                elif (row == 0 and column == 6) or (row == 1 and 6 <= column <= 7):
+                    if self.board[0][7] == computer_color:
+                        evaluation = 5
+                    else:
+                        evaluation = -5
+
+                elif (row == 7 and column == 1) or (row == 6 and 0 <= column <= 1):
+                    if self.board[7][0] == computer_color:
+                        evaluation = 5
+                    else:
+                        evaluation = -5
+
+                elif (row == 7 and column == 6) or (row == 6 and 6 <= column <= 7):
+                    if self.board[7][7] == computer_color:
+                        evaluation = 5
+                    else:
+                        evaluation = -5
+
+                # Side apart from adj and corners
+                elif (row == 0 and 1 < column < 6) or (row == 7 and 1 < column < 6) or (column == 0 and 1 < row < 6) or \
+                        (column == 7 and 1 < row < 6):
+                    evaluation = 5
+
+                # Corners
+                elif (row == 0 and column == 0) or (row == 0 and column == 7) or (row == 7 and column == 0) or \
+                        (row == 7 and column == 7):
+                    evaluation = 25
+
+                # Adding/removing according to player
+                if self.board[row][column] == computer_color:
+                    board_value += evaluation
+                elif self.board[row][column] == player_color:
+                    board_value -= evaluation
+
+        # In case of game win add 1000 to the winner value
         if self.check_win_conditions(player_color, computer_color, False) == 'p':
-            board_value = board_value + (player_value * 100)
+            board_value = board_value + (player_value * 1000)
         elif self.check_win_conditions(player_color, computer_color, False) == 'c':
-            board_value = board_value + (computer_value * 100)
+            board_value = board_value + (computer_value * 1000)
 
         return board_value
