@@ -25,7 +25,7 @@ def minimax_move(board: board_class.Board, max_depth: int, player_color: str, co
     :return: The best move
     :rtype: tuple
     """
-    move: tuple = maximize(deepcopy(board), 0, max_depth, player_color, computer_color, -65, 65).last_move
+    move: tuple = maximize(deepcopy(board), 0, max_depth, player_color, computer_color, -100000, 100000).last_move
     return move
 
 
